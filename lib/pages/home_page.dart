@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:assignment/models/drink.dart';
 import 'package:assignment/pages/drink_page.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -61,17 +61,22 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.search_rounded),
         onPressed: () async {
-          await getData(controller.text);
+          //await getData(controller.text);
         },
       ),
     );
   }
 
   Future<void> getData(String arg) async {
-    final response = await http.get(Uri.parse(base_url + arg));
-    final responseJson = json.decode(response.body);
-    setState(() {
-      datalist = responseJson['drinks'];
-    });
+    try {
+      var response = await Dio().get(base_url);
+      final responseJson = json.decode(response.toString());
+      setState(() {
+        datalist = responseJson['drinks'];
+      });
+      debugPrint(response.toString());
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }
